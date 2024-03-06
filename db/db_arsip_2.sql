@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 28, 2024 at 07:32 AM
--- Server version: 10.4.18-MariaDB
--- PHP Version: 7.3.27
+-- Waktu pembuatan: 06 Mar 2024 pada 13.07
+-- Versi server: 10.4.18-MariaDB
+-- Versi PHP: 7.3.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin`
+-- Struktur dari tabel `admin`
 --
 
 CREATE TABLE `admin` (
@@ -36,7 +36,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `admin`
+-- Dumping data untuk tabel `admin`
 --
 
 INSERT INTO `admin` (`admin_id`, `admin_nama`, `admin_username`, `admin_password`, `admin_foto`) VALUES
@@ -45,7 +45,7 @@ INSERT INTO `admin` (`admin_id`, `admin_nama`, `admin_username`, `admin_password
 -- --------------------------------------------------------
 
 --
--- Table structure for table `arsip`
+-- Struktur dari tabel `arsip`
 --
 
 CREATE TABLE `arsip` (
@@ -61,16 +61,17 @@ CREATE TABLE `arsip` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `arsip`
+-- Dumping data untuk tabel `arsip`
 --
 
 INSERT INTO `arsip` (`arsip_id`, `arsip_waktu_upload`, `arsip_petugas`, `arsip_kamar`, `arsip_nama`, `arsip_jenis`, `arsip_kategori`, `arsip_keterangan`, `arsip_file`) VALUES
-(14, '2024-01-21 21:01:04', 7, 2, 'Sosialisasi', 'png', 5, 'Sosialisasi untuk Balita', '961834595_line.png');
+(14, '2024-01-21 21:01:04', 7, 2, 'Sosialisasi', 'png', 5, 'Sosialisasi untuk Balita', '961834595_line.png'),
+(15, '2024-02-27 08:30:04', 13, 1, 'buku tulis', 'pdf', 1, 'buku dalam buku', '20235_Data_Analytics Client Brief.pdf');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bulan`
+-- Struktur dari tabel `bulan`
 --
 
 CREATE TABLE `bulan` (
@@ -79,7 +80,7 @@ CREATE TABLE `bulan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `bulan`
+-- Dumping data untuk tabel `bulan`
 --
 
 INSERT INTO `bulan` (`bulan_id`, `bulan_nama`) VALUES
@@ -99,7 +100,7 @@ INSERT INTO `bulan` (`bulan_id`, `bulan_nama`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `indikator_spm`
+-- Struktur dari tabel `indikator_spm`
 --
 
 CREATE TABLE `indikator_spm` (
@@ -110,7 +111,7 @@ CREATE TABLE `indikator_spm` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `indikator_spm`
+-- Dumping data untuk tabel `indikator_spm`
 --
 
 INSERT INTO `indikator_spm` (`indikator_id`, `indikator_nama`, `persentase_fix`, `jpelayanan_id`) VALUES
@@ -118,7 +119,7 @@ INSERT INTO `indikator_spm` (`indikator_id`, `indikator_nama`, `persentase_fix`,
 (2, 'Kunjungan Ibu Hamil K4', 100, 1),
 (3, 'Ibu Hamil dengan Imunisasi TT2+', 100, 1),
 (4, 'Ibu Hamil mendapat Fe3', 100, 1),
-(5, 'Ibu Hamil dengan kompli kasi yang ditangani', 100, 1),
+(5, 'Ibu Hamil dengan komplikasi yang ditangani', 100, 1),
 (6, 'Persalinan ditolong oleh Tenaga Kesehatan', 100, 2),
 (7, 'Persalinan di Fasilitas Kesehatan', 100, 2),
 (8, 'Jumlah kematian ibu melahirkan', 100, 2),
@@ -171,7 +172,7 @@ INSERT INTO `indikator_spm` (`indikator_id`, `indikator_nama`, `persentase_fix`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jenis_pelayanan`
+-- Struktur dari tabel `jenis_pelayanan`
 --
 
 CREATE TABLE `jenis_pelayanan` (
@@ -180,7 +181,7 @@ CREATE TABLE `jenis_pelayanan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `jenis_pelayanan`
+-- Dumping data untuk tabel `jenis_pelayanan`
 --
 
 INSERT INTO `jenis_pelayanan` (`jpelayanan_id`, `jpelayanan_nama`) VALUES
@@ -200,35 +201,45 @@ INSERT INTO `jenis_pelayanan` (`jpelayanan_id`, `jpelayanan_nama`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kamar`
+-- Struktur dari tabel `kamar`
 --
 
 CREATE TABLE `kamar` (
   `kamar_id` int(11) NOT NULL,
-  `kamar_nama` varchar(255) NOT NULL
+  `kamar_nama` varchar(255) NOT NULL,
+  `kamar_url` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `kamar`
+-- Dumping data untuk tabel `kamar`
 --
 
-INSERT INTO `kamar` (`kamar_id`, `kamar_nama`) VALUES
-(1, 'Imunisasi'),
-(2, 'Kesehatan Anak'),
-(3, 'KIA/KB'),
-(4, 'INM'),
-(5, 'Gizi'),
-(6, 'Farmasi'),
-(7, 'Rekam Medik'),
-(8, 'Gigi'),
-(9, 'Keuangan'),
-(10, 'Promosi kes'),
-(12, 'Kesling');
+INSERT INTO `kamar` (`kamar_id`, `kamar_nama`, `kamar_url`) VALUES
+(1, 'KIA & KB', 'kiakb'),
+(2, 'Gizi', 'gizi'),
+(3, 'Promkes', 'promkes'),
+(4, 'Kesehatan Lingkungan', 'kesling'),
+(5, 'Penyakit Menular', 'penyakitmenular'),
+(6, 'Penyakit Tidak Menular', 'penyakittidakmenular'),
+(7, 'Imunisasi', 'imunisasi'),
+(8, 'Surveilance', 'surveilance'),
+(9, 'Kesehatan Tradisional', 'kestra'),
+(10, 'Kesehatan Olahraga', 'kesol'),
+(11, 'Kesehatan Kerja', 'kesker'),
+(12, 'Kesehatan Lansia', 'keslan'),
+(13, 'Upaya Kesehatan Sekolah', 'uks'),
+(14, 'Kesehatan Gigi', 'gigi'),
+(15, 'UKP', 'ukp'),
+(16, 'Perkesmas', 'perkesmas'),
+(17, 'Kefarmasian', 'kefarmasian'),
+(18, 'Laboratorium', 'laboratorium'),
+(19, 'Manajemen', 'manajemen'),
+(20, 'Keuangan', 'keuangan');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kategori`
+-- Struktur dari tabel `kategori`
 --
 
 CREATE TABLE `kategori` (
@@ -238,7 +249,7 @@ CREATE TABLE `kategori` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `kategori`
+-- Dumping data untuk tabel `kategori`
 --
 
 INSERT INTO `kategori` (`kategori_id`, `kategori_nama`, `kamar_id`) VALUES
@@ -280,7 +291,7 @@ INSERT INTO `kategori` (`kategori_id`, `kategori_nama`, `kamar_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `petugas`
+-- Struktur dari tabel `petugas`
 --
 
 CREATE TABLE `petugas` (
@@ -293,19 +304,35 @@ CREATE TABLE `petugas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `petugas`
+-- Dumping data untuk tabel `petugas`
 --
 
 INSERT INTO `petugas` (`petugas_id`, `petugas_nama`, `petugas_username`, `petugas_password`, `petugas_foto`, `kamar_id`) VALUES
 (7, 'Nano', 'nano', '$2y$10$06IQ2IbqFtdHr9ijkf9hr.xycl8S.cvAbMBG/cOed9pJC5m7oObWq', '1787265699_edward-cisneros-_H6wpor9mjs-unsplash.jpg', 2),
-(9, 'Kia KB', 'kiakb', '$2y$10$GTzBZw1rvRn9./.9oe8XcOn.bVqzW68097.lsz4iS1s8son.azlQy', '', 3),
+(9, 'Kia KB', 'kiakb', '$2y$10$oktnDxMYpn663WJHrJiIFOmfCVXqK6GPT0IUTJyQO4NVWgXBaY/uK', '', 1),
 (10, 'Petugas Imunisasi', 'petugasimun', '$2y$10$TnkkkmlNeRx06KEeQ0gLTOEF0clFVaduG4CSfuJGkhi9jeNnvEo/.', '', 1),
-(12, 'Lala', 'petugas', '$2y$10$0i7dIR4O67meix828KqDN.96bxX9ry8A5xBPInh2Iz.kUjyLByIjW', '', 1);
+(12, 'Lala', 'petugas', '$2y$10$0i7dIR4O67meix828KqDN.96bxX9ry8A5xBPInh2Iz.kUjyLByIjW', '', 1),
+(13, 'imunisasi', 'imunisasi', '$2y$10$.yhRfiNAlH7EmebiagcbgeDSNIDM37T6U5lFTkd3Up5bq.Pl0bZBu', '', 7),
+(14, 'kiakb', 'kiakb', '$2y$10$HSG3EJnJ6p.akO7sJXupseJU7hIECiEuzAhMRsth4KTq2Ei/qbi7.', '', 3),
+(15, 'promkes', 'promkes', '$2y$10$okfUXmTqZQ6EmtQ7LldaB.3MfY8PNEr2SxDQQcw7mRzg/cJygcf/C', '', 10),
+(16, 'gigi', 'gigi', '$2y$10$iyvQvPN4ZbWEqZZtVfqqIO4d2cNvLqPqnpXplOCYXnrouYd.jbUKW', '', 16),
+(17, 'kia&kb', 'kia&kb', '$2y$10$8FDvVIy0vR43svGMJ6uSD.Y./bQkSkQqaAgZHsk.jV8.FDdK2LuEG', '', 1),
+(18, 'Andi', 'petugas_andi', '$2y$10$p8p/8d0p4HlBgI0BGuQFburCl9ahrM12RLobELqlPAQRvE7HGLf1.', '', 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `riwayat`
+-- Struktur dari tabel `program`
+--
+
+CREATE TABLE `program` (
+  `program_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `riwayat`
 --
 
 CREATE TABLE `riwayat` (
@@ -316,7 +343,7 @@ CREATE TABLE `riwayat` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `riwayat`
+-- Dumping data untuk tabel `riwayat`
 --
 
 INSERT INTO `riwayat` (`riwayat_id`, `riwayat_waktu`, `riwayat_user`, `riwayat_arsip`) VALUES
@@ -325,12 +352,12 @@ INSERT INTO `riwayat` (`riwayat_id`, `riwayat_waktu`, `riwayat_user`, `riwayat_a
 -- --------------------------------------------------------
 
 --
--- Table structure for table `spm`
+-- Struktur dari tabel `spm`
 --
 
 CREATE TABLE `spm` (
   `spm_id` int(11) NOT NULL,
-  `tahun` int(191) NOT NULL,
+  `tahun_id` int(11) NOT NULL,
   `bulan_id` int(11) NOT NULL,
   `absolut_tahunan` int(191) NOT NULL,
   `absolut_bulanan` int(191) NOT NULL,
@@ -340,21 +367,40 @@ CREATE TABLE `spm` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `spm`
+-- Dumping data untuk tabel `spm`
 --
 
-INSERT INTO `spm` (`spm_id`, `tahun`, `bulan_id`, `absolut_tahunan`, `absolut_bulanan`, `persentase`, `indikator_id`, `jpelayanan_id`) VALUES
-(1, 2024, 1, 251, 19, 7.6, 1, 1),
-(2, 2024, 1, 251, 20, 8, 2, 1),
-(3, 2024, 1, 251, 16, 6.4, 3, 1),
-(4, 2024, 2, 251, 10, 8, 1, 1),
-(5, 2024, 1, 251, 30, 0, 4, 2),
-(6, 2024, 1, 251, 2, 0.8, 5, 1);
+INSERT INTO `spm` (`spm_id`, `tahun_id`, `bulan_id`, `absolut_tahunan`, `absolut_bulanan`, `persentase`, `indikator_id`, `jpelayanan_id`) VALUES
+(1, 1, 1, 251, 19, 7.6, 1, 1),
+(2, 1, 1, 251, 20, 8, 2, 1),
+(3, 1, 1, 251, 16, 6.4, 3, 1),
+(4, 1, 2, 251, 10, 8, 1, 1),
+(6, 1, 1, 251, 2, 0.8, 5, 1),
+(7, 1, 1, 251, 20, 7.9, 4, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Struktur dari tabel `tahun`
+--
+
+CREATE TABLE `tahun` (
+  `tahun_id` int(11) NOT NULL,
+  `tahun_angka` int(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `tahun`
+--
+
+INSERT INTO `tahun` (`tahun_id`, `tahun_angka`) VALUES
+(1, 2024),
+(2, 2025);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `user`
 --
 
 CREATE TABLE `user` (
@@ -368,7 +414,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `user`
+-- Dumping data untuk tabel `user`
 --
 
 INSERT INTO `user` (`user_id`, `user_nama`, `user_email`, `user_password`, `verify_token`, `verify_status`, `user_foto`) VALUES
@@ -379,149 +425,173 @@ INSERT INTO `user` (`user_id`, `user_nama`, `user_email`, `user_password`, `veri
 --
 
 --
--- Indexes for table `admin`
+-- Indeks untuk tabel `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`admin_id`);
 
 --
--- Indexes for table `arsip`
+-- Indeks untuk tabel `arsip`
 --
 ALTER TABLE `arsip`
   ADD PRIMARY KEY (`arsip_id`);
 
 --
--- Indexes for table `bulan`
+-- Indeks untuk tabel `bulan`
 --
 ALTER TABLE `bulan`
   ADD PRIMARY KEY (`bulan_id`);
 
 --
--- Indexes for table `indikator_spm`
+-- Indeks untuk tabel `indikator_spm`
 --
 ALTER TABLE `indikator_spm`
   ADD PRIMARY KEY (`indikator_id`);
 
 --
--- Indexes for table `jenis_pelayanan`
+-- Indeks untuk tabel `jenis_pelayanan`
 --
 ALTER TABLE `jenis_pelayanan`
   ADD PRIMARY KEY (`jpelayanan_id`);
 
 --
--- Indexes for table `kamar`
+-- Indeks untuk tabel `kamar`
 --
 ALTER TABLE `kamar`
   ADD PRIMARY KEY (`kamar_id`);
 
 --
--- Indexes for table `kategori`
+-- Indeks untuk tabel `kategori`
 --
 ALTER TABLE `kategori`
   ADD PRIMARY KEY (`kategori_id`),
   ADD KEY `kamar_id` (`kamar_id`);
 
 --
--- Indexes for table `petugas`
+-- Indeks untuk tabel `petugas`
 --
 ALTER TABLE `petugas`
   ADD PRIMARY KEY (`petugas_id`),
   ADD KEY `kamar_id` (`kamar_id`);
 
 --
--- Indexes for table `riwayat`
+-- Indeks untuk tabel `program`
+--
+ALTER TABLE `program`
+  ADD PRIMARY KEY (`program_id`);
+
+--
+-- Indeks untuk tabel `riwayat`
 --
 ALTER TABLE `riwayat`
   ADD PRIMARY KEY (`riwayat_id`);
 
 --
--- Indexes for table `spm`
+-- Indeks untuk tabel `spm`
 --
 ALTER TABLE `spm`
   ADD PRIMARY KEY (`spm_id`);
 
 --
--- Indexes for table `user`
+-- Indeks untuk tabel `tahun`
+--
+ALTER TABLE `tahun`
+  ADD PRIMARY KEY (`tahun_id`);
+
+--
+-- Indeks untuk tabel `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `admin`
+-- AUTO_INCREMENT untuk tabel `admin`
 --
 ALTER TABLE `admin`
   MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `arsip`
+-- AUTO_INCREMENT untuk tabel `arsip`
 --
 ALTER TABLE `arsip`
-  MODIFY `arsip_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `arsip_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT for table `bulan`
+-- AUTO_INCREMENT untuk tabel `bulan`
 --
 ALTER TABLE `bulan`
   MODIFY `bulan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `indikator_spm`
+-- AUTO_INCREMENT untuk tabel `indikator_spm`
 --
 ALTER TABLE `indikator_spm`
   MODIFY `indikator_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
--- AUTO_INCREMENT for table `jenis_pelayanan`
+-- AUTO_INCREMENT untuk tabel `jenis_pelayanan`
 --
 ALTER TABLE `jenis_pelayanan`
   MODIFY `jpelayanan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `kamar`
+-- AUTO_INCREMENT untuk tabel `kamar`
 --
 ALTER TABLE `kamar`
-  MODIFY `kamar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `kamar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT for table `kategori`
+-- AUTO_INCREMENT untuk tabel `kategori`
 --
 ALTER TABLE `kategori`
   MODIFY `kategori_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
--- AUTO_INCREMENT for table `petugas`
+-- AUTO_INCREMENT untuk tabel `petugas`
 --
 ALTER TABLE `petugas`
-  MODIFY `petugas_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `petugas_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
--- AUTO_INCREMENT for table `riwayat`
+-- AUTO_INCREMENT untuk tabel `program`
+--
+ALTER TABLE `program`
+  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `riwayat`
 --
 ALTER TABLE `riwayat`
   MODIFY `riwayat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `spm`
+-- AUTO_INCREMENT untuk tabel `spm`
 --
 ALTER TABLE `spm`
-  MODIFY `spm_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `spm_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT untuk tabel `tahun`
+--
+ALTER TABLE `tahun`
+  MODIFY `tahun_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT untuk tabel `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `kategori`
+-- Ketidakleluasaan untuk tabel `kategori`
 --
 ALTER TABLE `kategori`
   ADD CONSTRAINT `kategori_ibfk_1` FOREIGN KEY (`kamar_id`) REFERENCES `kamar` (`kamar_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
