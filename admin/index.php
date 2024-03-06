@@ -46,25 +46,6 @@
                     </ul>
                 </div>
             </div>
-            <!-- <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                <div class="white-box analytics-info-cs res-mg-t-30 table-mg-t-pro-n">
-                    <h3 class="box-title">User / Pengguna</h3>
-                    <ul class="list-inline two-part-sp">
-                        <li>
-                            <div id="sparklinedash2"></div>
-                        </li>
-                        <li class="text-right graph-two-ctn">
-                            <i class="fa fa-level-up" aria-hidden="true"></i> 
-                            <span class="counter text-purple">
-                                <?php 
-                                $jumlah_user = mysqli_query($koneksi,"select * from user");
-                                ?>
-                                <span class="counter"><?php echo mysqli_num_rows($jumlah_user); ?></span>
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
             <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
                 <div class="white-box analytics-info-cs res-mg-t-30 res-tablet-mg-t-30 dk-res-t-pro-30">
                     <h3 class="box-title">Total Arsip</h3>
@@ -111,8 +92,16 @@
 
 <div class="product-sales-area mg-tb-30">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+        <div class="panel panel">
+            <?php include 'spm_2.php'; ?>
+        </div>
+
+        
+
+    </div>
+        <!-- <div class="row"> -->
+
+            <!-- <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
                 <div class="product-sales-chart">
                     <div class="portlet-title">
                         <div class="row">
@@ -174,15 +163,10 @@
                     </div>
                 </div>
 
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
     </div>
 </div>
 
 
 <?php include 'footer.php'; ?>
-
-<!-- Attribute
-<a href="https://www.flaticon.com/free-icons/single-bed" title="single bed icons">Single bed icons created by dwiangga.icon  - Flaticon</a> 
-<a href="https://www.flaticon.com/free-icons/bed" title="bed icons">Bed icons created by Cursor Creative - Flaticon</a>
-<a href="https://www.flaticon.com/free-icons/bedroom" title="bedroom icons">Bedroom icons created by Ylivdesign - Flaticon</a>-->
