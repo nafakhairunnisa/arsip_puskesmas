@@ -2,13 +2,13 @@
 include '../koneksi.php';
 
 // Get distinct months from your table
-$monthsResult = mysqli_query($koneksi, "SELECT DISTINCT bulan_nama FROM bulan ORDER BY bulan_id ASC");
+$monthsResult = mysqli_query($koneksi, "SELECT bulan_id, bulan_nama FROM bulan ORDER BY bulan_id ASC");
 $months = mysqli_fetch_all($monthsResult, MYSQLI_ASSOC);
 
 $currentMonth = isset($_GET['bulan']) ? $_GET['bulan'] : (isset($months[0]['bulan_nama']) ? $months[0]['bulan_nama'] : '');
 
 // Get distinct years from your table
-$yearsResult = mysqli_query($koneksi, "SELECT DISTINCT tahun FROM spm ORDER BY tahun DESC");
+$yearsResult = mysqli_query($koneksi, "SELECT DISTINCT tahun_id, tahun_angka FROM tahun ORDER BY tahun_angka ASC");
 $years = mysqli_fetch_all($yearsResult, MYSQLI_ASSOC);
 
 $currentYear = isset($_GET['tahun']) ? $_GET['tahun'] : (isset($years[0]['tahun']) ? $years[0]['tahun'] : date('Y')); // Set default to current year
@@ -18,7 +18,7 @@ $data_spm_query = "SELECT * FROM spm
                     INNER JOIN jenis_pelayanan ON spm.jpelayanan_id = jenis_pelayanan.jpelayanan_id
                     INNER JOIN indikator_spm ON spm.indikator_id = indikator_spm.indikator_id
                     WHERE spm.bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = ?)
-                    AND spm.tahun = ?
+                    AND spm.tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                     ORDER BY spm.indikator_id ASC";
 
 $data_spm_stmt = mysqli_prepare($koneksi, $data_spm_query);
@@ -50,13 +50,15 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                     <select class="form-control" name="bulan" onchange="location = this.value;">
                         <?php
                         foreach ($months as $monthOption) {
+                            $bulan_id = $monthOption['bulan_id'];
                             $selected = ($monthOption['bulan_nama'] == $currentMonth) ? 'selected' : '';
-                            echo "<option value='?bulan={$monthOption['bulan_nama']}&tahun=$currentYear' $selected>{$monthOption['bulan_nama']}</option>";
+                            echo "<option value='?bulan={$monthOption['bulan_nama']}&bulan_id=$bulan_id&tahun=$currentYear' $selected>{$monthOption['bulan_nama']}</option>";
                         }
                         ?>
                     </select>
                 </div>
             </div>
+
 
             <div class="pull-left" style="margin-left: 10px;">
                 <div class="form-group">
@@ -64,16 +66,23 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                     <select class="form-control" name="tahun" onchange="location = this.value;">
                         <?php
                         foreach ($years as $yearOption) {
-                            $selected = ($yearOption['tahun'] == $currentYear) ? 'selected' : '';
-                            echo "<option value='?bulan=$currentMonth&tahun={$yearOption['tahun']}' $selected>{$yearOption['tahun']}</option>";
+                            $tahun_id = $yearOption['tahun_id'];
+                            $selected = ($yearOption['tahun_angka'] == $currentYear) ? 'selected' : '';
+                            echo "<option value='?bulan=$currentMonth&tahun={$yearOption['tahun_angka']}&tahun_id=$tahun_id' $selected>{$yearOption['tahun_angka']}</option>";
                         }
                         ?>
                     </select>
                 </div>
             </div>
 
-            <div class="pull-right">
+            <!-- <div class="pull-right">
+                <a href="index.php" class="btn btn-primary"></i>Print</a>
+            </div> -->
+            <div class="pull-right" style="margin-left: 10px;">
                 <a href="spm_edit_2.php" class="btn btn-primary"><i class="fa fa-wrench"></i> Edit SPM</a>
+            </div>
+            <div class="pull-right">
+                <a href="tambah_tahun.php" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Tahun</a>
             </div>
 
             <br>
@@ -117,13 +126,23 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                     while($p = mysqli_fetch_array($data_spm)) :
                         if ($p['jpelayanan_id'] == 1) :
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
-                                        WHERE indikator_id = ? AND jpelayanan_id = ?
-                                        AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                            WHERE indikator_id = ? AND jpelayanan_id = ?
+                            AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
+                            AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
+                            
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
                             
                             // Check if the result set is empty
                             if(mysqli_num_rows($spm_result) > 0) {
@@ -160,11 +179,19 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
                             
                             // Check if the result set is empty
                             if(mysqli_num_rows($spm_result) > 0) {
@@ -201,12 +228,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -233,12 +275,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -265,12 +322,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -297,12 +369,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -329,12 +416,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -361,12 +463,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -393,12 +510,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -425,12 +557,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -457,12 +604,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
@@ -489,12 +651,27 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                             $spm_query = mysqli_prepare($koneksi, "SELECT * FROM spm
                                         WHERE indikator_id = ? AND jpelayanan_id = ?
                                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = '$currentMonth')
-                                        AND tahun = '$currentYear'
+                                        AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)
                                         ");
-                            mysqli_stmt_bind_param($spm_query, "ii", $p['indikator_id'], $p['jpelayanan_id']);
-                            mysqli_stmt_execute($spm_query);
-                            $spm_result = mysqli_stmt_get_result($spm_query);
-                            $spm_data = mysqli_fetch_array($spm_result);
+                            if ($spm_query === false) {
+                                die("Error in preparing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
+                            if (mysqli_stmt_execute($spm_query)) {
+                                $spm_result = mysqli_stmt_get_result($spm_query);
+                                // Continue with fetching data...
+                            } else {
+                                die("Error in executing statement: " . mysqli_error($koneksi));
+                            }
+                            
+                            // Check if the result set is empty
+                            if(mysqli_num_rows($spm_result) > 0) {
+                                $spm_data = mysqli_fetch_array($spm_result);
+                            } else {
+                                // Set default values if the result set is empty
+                                $spm_data = array('absolut_tahunan' => 0, 'absolut_bulanan' => 0, 'persentase' => 0);
+                            }
                             mysqli_stmt_close($spm_query);
                     ?>
                             <tr>
