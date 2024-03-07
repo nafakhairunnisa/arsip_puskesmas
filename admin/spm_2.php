@@ -75,14 +75,14 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                 </div>
             </div>
 
-            <!-- <div class="pull-right">
-                <a href="index.php" class="btn btn-primary"></i>Print</a>
-            </div> -->
             <div class="pull-right" style="margin-left: 10px;">
                 <a href="spm_edit_2.php" class="btn btn-primary"><i class="fa fa-wrench"></i> Edit SPM</a>
             </div>
-            <div class="pull-right">
+            <div class="pull-right" style="margin-left: 10px;">
                 <a href="tambah_tahun.php" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah Tahun</a>
+            </div>
+            <div class="pull-right">
+                <a href="../spm-pdf.php" target="_blank" class="btn btn-primary">Print SPM</a>
             </div>
 
             <br>

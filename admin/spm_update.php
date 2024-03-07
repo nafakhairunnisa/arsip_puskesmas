@@ -28,14 +28,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             /// Check if the data already exists in the database
             $check_query = mysqli_prepare($koneksi, "SELECT * FROM spm
             WHERE indikator_id = ? AND jpelayanan_id = ?
-            AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = ?)
-            AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)");
+            AND bulan_id = ?
+            AND tahun_id = ?");
 
             if (!$check_query) {
             die("Query preparation failed: " . mysqli_error($koneksi));
             }
 
-            mysqli_stmt_bind_param($check_query, "iss", $indikator_id, $currentMonth, $currentYear);
+            mysqli_stmt_bind_param($check_query, "iiii", $indikator_id, $jpelayanan_id, $currentMonth, $currentYear);
             mysqli_stmt_execute($check_query);
             $check_result = mysqli_stmt_get_result($check_query);
 
@@ -47,14 +47,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         WHERE indikator_id = ? AND jpelayanan_id = ?
                         AND bulan_id = (SELECT bulan_id FROM bulan WHERE bulan_nama = ?)
                         AND tahun_id = (SELECT tahun_id FROM tahun WHERE tahun_angka = ?)");
-                    mysqli_stmt_bind_param($update_query, "ddiiss", $absolut_tahunan, $absolut_bulanan, $persentase, $indikator_id, $currentMonth, $currentYear);
+                    mysqli_stmt_bind_param($update_query, "iifiii", $absolut_tahunan, $absolut_bulanan, $persentase, $indikator_id, $currentMonth, $currentYear);
                     mysqli_stmt_execute($update_query);
                     mysqli_stmt_close($update_query);
                     echo "Update successful!";
                 } else { // If data does not exist, perform insert
                     $insert_query = mysqli_prepare($koneksi, "INSERT INTO spm (indikator_id, jpelayanan_id, bulan_id, tahun_id, absolut_tahunan, absolut_bulanan, persentase)
                         VALUES (?, 1, (SELECT bulan_id FROM bulan WHERE bulan_nama = ?), (SELECT tahun_id FROM tahun WHERE tahun_angka = ?), ?, ?, ?)");
-                    mysqli_stmt_bind_param($insert_query, "issddd", $indikator_id, $currentMonth, $currentYear, $absolut_tahunan, $absolut_bulanan, $persentase);
+                    mysqli_stmt_bind_param($insert_query, "iiiiif", $indikator_id, $currentMonth, $currentYear, $absolut_tahunan, $absolut_bulanan, $persentase);
                     mysqli_stmt_execute($insert_query);
                     mysqli_stmt_close($insert_query);
                     echo "Insert successful!";

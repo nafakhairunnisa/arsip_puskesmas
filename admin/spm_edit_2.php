@@ -165,7 +165,6 @@ $data_spm_result = mysqli_query($koneksi, $data_spm_query);
                                         mysqli_stmt_bind_param($spm_query, "iii", $p['indikator_id'], $p['jpelayanan_id'], $currentYear);
                                         if (mysqli_stmt_execute($spm_query)) {
                                             $spm_result = mysqli_stmt_get_result($spm_query);
-                                            // Continue with fetching data...
                                         } else {
                                             die("Error in executing statement: " . mysqli_error($koneksi));
                                         }
